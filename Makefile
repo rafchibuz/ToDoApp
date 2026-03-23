@@ -1,7 +1,7 @@
 include .env
 export
 
-export PROJECT_ROOT=$(CURDIR) # <(shell pwd)> if using Ubuntu WSL
+export PROJECT_ROOT=$(CURDIR)# <(shell pwd)> if using Ubuntu WSL
 export MSYS_NO_PATHCONV=1 # Prevents path conversion issues on Windows when using Docker
 
 env-up:
@@ -19,6 +19,12 @@ env-cleanup:
 	else \
 		echo "Cleanup aborted."; \
 	fi
+
+env-port-forward:
+	@docker compose up -d port-forwarder
+
+env-port-close:
+	@docker compose down port-forwarder
 
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
@@ -44,7 +50,7 @@ migrate-action:
 		exit 1; \
 	fi; \
 
-	docker compose run --rm todoapp-postgres-migrate \
+	@docker compose run --rm todoapp-postgres-migrate \
 		-path /migrations \
 		-database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@todoapp-postgres:5432/${POSTGRES_DB}?sslmode=disable \
 		"$(action)"
